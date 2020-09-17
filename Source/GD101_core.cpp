@@ -51,7 +51,7 @@ HRESULT InitWindow(LPCWSTR windowName , int height,int width)
     wcex.hCursor = LoadCursor( NULL, IDC_ARROW );
     wcex.hbrBackground = ( HBRUSH )( COLOR_WINDOW + 1 );
     wcex.lpszMenuName = NULL;
-	wcex.lpszClassName = (LPCWSTR)windowName;///TEXT("TutorialWindowClass");
+	wcex.lpszClassName = (LPCWSTR)windowName;///TEXT("");
     wcex.hIconSm = LoadIcon( wcex.hInstance, ( LPCTSTR )IDI_TUTORIAL1 );
     if( !RegisterClassEx( &wcex ) )
         return E_FAIL;
@@ -59,7 +59,7 @@ HRESULT InitWindow(LPCWSTR windowName , int height,int width)
     // Create window
 	RECT rc = { 0, 0, height, width };
     AdjustWindowRect( &rc, WS_OVERLAPPEDWINDOW, FALSE );
-    g_hWnd = CreateWindow( (LPCWSTR)windowName/*TEXT("TutorialWindowClass")*/, (LPCWSTR)windowName /*TEXT("Direct3D 11 Tutorial 3: Shaders")*/,
+    g_hWnd = CreateWindow( (LPCWSTR)windowName/*TEXT("")*/, (LPCWSTR)windowName /*TEXT("")*/,
                            WS_OVERLAPPEDWINDOW,
                            CW_USEDEFAULT, CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, g_hInst,
                            NULL );
