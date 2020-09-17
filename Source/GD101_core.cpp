@@ -1,4 +1,4 @@
-#include "PlatformEntry.h"
+#include "Settings.h"
 
 bool GD101_InitWindow(const char* windowName, int height, int width)
 {

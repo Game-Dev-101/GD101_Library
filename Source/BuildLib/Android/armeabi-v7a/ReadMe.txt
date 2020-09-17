@@ -1,0 +1,1 @@
+Binary armv7-a 

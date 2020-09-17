@@ -2,8 +2,9 @@
 #define __PLATFORM_ENTRY__
 
 // Standart Windows set to DirectX
-#define DIRECT_X
-    #if defined(DIRECT_X)
+#ifndef OPENGL
+#define DIRECTX
+    #if defined(DIRECTX)
         #include <d3d11.h>
         #include <d3dx11.h>
         #include <d3dcompiler.h>
@@ -43,7 +44,8 @@
 
     #elif defined(OPENGL)
 
-    #endif // DIRECT_X
+#endif // DIRECTX
+#endif // OPENGL
 
 HRESULT InitWindow(LPCWSTR , int,int);
 LRESULT CALLBACK    WndProc( HWND, UINT, WPARAM, LPARAM );

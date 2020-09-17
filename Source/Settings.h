@@ -3,6 +3,7 @@
 
 #if defined(_WINDOWS) || defined(WIN32) || defined(_WIN32)
     #include "Platform/Windows/PlatformEntry.h"
+	#include "Platform\Windows\Resource.h"
     
 #elif defined(ANDROID)
     #include "Platform/Android/PlatformEntry.h"
