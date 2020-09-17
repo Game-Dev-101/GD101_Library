@@ -2,12 +2,12 @@
 
 ![Image of Yaktocat](https://i.ibb.co/wcg0zP1/failure.png)
 
-Platform
-  Desktop     (Windows)
-  Android
-  PlayStation 1
-  PlayStation 2
-  WebAssembly
+# Platform
+Desktop     (Windows)
+Android
+PlayStation 1
+PlayStation 2
+WebAssembly
 
 Ini Hanya Untuk Belajar
 
