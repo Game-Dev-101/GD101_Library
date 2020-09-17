@@ -1,6 +1,6 @@
 # GD101_Library
 
-![Image of Yaktocat](https://cdn-media-1.freecodecamp.org/images/LSWK5plwMRtm14FC4QTmVhBKRF4wxeCj591G)
+![Image of Yaktocat](https://i.ibb.co/c81PxWk/Failure-GD101-LIB.png)
 
 Ini Hanya Untuk Belajar
 
