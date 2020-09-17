@@ -1,6 +1,6 @@
 # GD101_Library
 
-![Build Status](https://circleci.com/gh/<your github name>/<repo name>.png?circle-token=:circle-token)
+![Image of Yaktocat](https://cdn-media-1.freecodecamp.org/images/LSWK5plwMRtm14FC4QTmVhBKRF4wxeCj591G)
 
 Ini Hanya Untuk Belajar
 
