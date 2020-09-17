@@ -1,6 +1,6 @@
 #include <iostream>
-
 #include "GD101_Lib.h"
+
 int main()
 {
 	if(!GD101_InitWindow("Apa Kabar",500,500))
@@ -9,14 +9,14 @@ int main()
 	LoadShaderFile(L"Tutorial02.glsl");
 
 	// Main message loop
-    while(!EndLoop())
-    {
+	while(!EndLoop())
+	{
 		ClearScreen();
 
 		ExecuteShader();
 
 		ScreenFlip();
-    }
+	}
 
     return 0;
 }
