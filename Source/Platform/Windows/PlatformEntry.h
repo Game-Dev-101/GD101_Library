@@ -64,8 +64,11 @@ int ScreenFlip();
 void ExecuteShader();
 int ClearScreen();
 
-bool GD101_InitWindow(LPCWSTR windowName, int height, int width);
-extern int main();
+bool GD101_InitWindow(const char * windowName, int height, int width);
+extern int Main();
 MSG msg = {0};
+
+wchar_t * tempUnicode;
+
 
 #endif //__PLATFORM_ENTRY__

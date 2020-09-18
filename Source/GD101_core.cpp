@@ -1,9 +1,21 @@
 #include "Settings.h"
 
-bool GD101_InitWindow(const char* windowName, int height, int width)
+//-----------------------------------------------------------------------------------------------------------
+//		FOR WINDOWS PLATFORM
+//-----------------------------------------------------------------------------------------------------------
+#if defined(_WINDOWS) || defined(WIN32) || defined(_WIN32)
+bool GD101_InitWindow(const char * windowName, int height, int width)
 {
-	if( !InitWindow((LPCWSTR) windowName, height, width)  )
+	#if defined(UNICODE)
+		tempUnicode= new wchar_t[strlen(windowName) + 1];
+		mbstowcs_s(NULL, tempUnicode, strlen(windowName) + 1, windowName, strlen(windowName));
+
+		if( !InitWindow(tempUnicode, height, width)  )
         return false;
+	#else
+		if( !InitWindow(windowName, height, width)  )
+        return false;
+	#endif
 
     if( !InitDevice() )
     {
@@ -18,25 +30,20 @@ bool GD101_InitWindow(const char* windowName, int height, int width)
 
 bool EndLoop()
 {
-    #if defined(_WINDOWS) || defined(WIN32) || defined(_WIN32)
         if( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )
         {
             TranslateMessage( &msg );
             DispatchMessage( &msg );
         }
-        //else
-        //	Render();
-
         if(WM_QUIT == msg.message){
             CleanupDevice();
+
+			delete tempUnicode;
             return true;
         }
-    #endif  // 
-    
+ 
 	return false;
 }
-
-#if defined(_WINDOWS) || defined(WIN32) || defined(_WIN32)
 HRESULT InitWindow(LPCWSTR windowName , int height,int width)
 {
 	 // Register class
@@ -57,7 +64,7 @@ HRESULT InitWindow(LPCWSTR windowName , int height,int width)
         return E_FAIL;
 
     // Create window
-	RECT rc = { 0, 0, height, width };
+	RECT rc = { 0, 0, width, height };
     AdjustWindowRect( &rc, WS_OVERLAPPEDWINDOW, FALSE );
     g_hWnd = CreateWindow( (LPCWSTR)windowName/*TEXT("")*/, (LPCWSTR)windowName /*TEXT("")*/,
                            WS_OVERLAPPEDWINDOW,
@@ -70,7 +77,7 @@ HRESULT InitWindow(LPCWSTR windowName , int height,int width)
 }
 LRESULT CALLBACK    WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
-	   PAINTSTRUCT ps;
+	PAINTSTRUCT ps;
     HDC hdc;
 
     switch( message )
@@ -89,8 +96,6 @@ LRESULT CALLBACK    WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
     }
     return 0;
 }
-#endif // #if defined(_WINDOWS) || defined(WIN32) || defined(_WIN32)
-
 int LoadShaderFile(wchar_t * pFileName)
 {
 	int hr = 0;
@@ -379,19 +384,14 @@ int ScreenFlip()
     
 	return 1;
 }
-
 //--------------------------------------------------------------------------------------
 //  ENTRYPOINT
 //--------------------------------------------------------------------------------------
-#if defined(_WINDOWS) || defined(WIN32) || defined(_WIN32)
-    int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow )
-#elif defined(ANDROID)
-    int android_main() 
-#endif
+int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow )
 {
 	g_hInst = hInstance;
 	_nCmdShow= nCmdShow;
 
-	return main();
+	return Main();
 }
-
+#endif // #if defined(_WINDOWS) || defined(WIN32) || defined(_WIN32)

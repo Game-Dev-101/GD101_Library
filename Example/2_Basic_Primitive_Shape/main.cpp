@@ -6,7 +6,7 @@ int main()
 	if(!GD101_InitWindow("Apa Kabar",500,500))
 		return 0;
 
-	LoadShaderFile(L"Shader.glsl");
+	LoadShaderFile(L"Tutorial02.glsl");
 
 	// Main message loop
 	while(!EndLoop())
