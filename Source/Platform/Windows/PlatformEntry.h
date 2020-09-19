@@ -42,6 +42,9 @@
             XMFLOAT3 Pos;
         };
 
+		// Windows Size
+		RECT rc;
+
     #elif defined(OPENGL)
 
 #endif // DIRECTX

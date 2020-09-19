@@ -1,28 +1,47 @@
-﻿Build started 18/09/2020 9:27:13.
-     1>Project "C:\GD101_LIB-DEV\Source\Script\windows\GD101_LIB_VS2010.vcxproj" on node 2 (rebuild target(s)).
+﻿Build started 19/09/2020 7:15:18.
+     1>Project "C:\GD101_LIB\master\Source\Script\windows\GD101_LIB_VS2010.vcxproj" on node 2 (rebuild target(s)).
      1>_PrepareForClean:
          Deleting file "..\..\BuildLib\Windows\DX\InterMediate\GD101_LIB.lastbuildstate".
      1>C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(298,5): warning MSB8004: Intermediate Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Intermediate Directory.
      1>C:\Program Files\MSBuild\Microsoft.Cpp\v4.0\Microsoft.CppBuild.targets(299,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
        InitializeBuildStatus:
-         Creating "..\..\BuildLib\Windows\DX\InterMediate\GD101_LIB.unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "..\..\BuildLib\Windows\DX\InterMediate\GD101_LIB.unsuccessfulbuild".
        ClCompile:
-         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W4 /WX- /Od /Oi /Oy- /D WIN32 /D _DEBUG /D DEBUG /D PROFILE /D _WINDOWS /D D3DXFX_LARGEADDRESS_HANDLE /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /arch:SSE2 /fp:fast /Zc:wchar_t /Zc:forScope /openmp- /Fo"..\..\BuildLib\Windows\DX\InterMediate\\" /Fd"..\..\BuildLib\Windows\DX\InterMediate\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ../../GD101_Core.cpp  
+         C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W4 /WX- /Od /Oi /Oy- /D WIN32 /D _DEBUG /D DEBUG /D PROFILE /D _WINDOWS /D D3DXFX_LARGEADDRESS_HANDLE /D _UNICODE /D UNICODE /Gm- /EHsc /RTC1 /MDd /GS /arch:SSE2 /fp:fast /Zc:wchar_t /Zc:forScope /openmp- /Fo"..\..\BuildLib\Windows\DX\InterMediate\\" /Fd"..\..\BuildLib\Windows\DX\InterMediate\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ../../GD101_Core.cpp ..\..\GD101_graphics.cpp  
          GD101_Core.cpp
-     1>c:\gd101_lib-dev\source\gd101_core.cpp(390): warning C4100: 'lpCmdLine' : unreferenced formal parameter
-     1>c:\gd101_lib-dev\source\gd101_core.cpp(390): warning C4100: 'hPrevInstance' : unreferenced formal parameter
+     1>c:\gd101_lib\master\source\gd101_core.cpp(388): warning C4100: 'lpCmdLine' : unreferenced formal parameter
+     1>c:\gd101_lib\master\source\gd101_core.cpp(388): warning C4100: 'hPrevInstance' : unreferenced formal parameter
+         GD101_graphics.cpp
+         Generating Code...
        ResourceCompile:
          C:\Program Files\Microsoft SDKs\Windows\v7.0A\bin\rc.exe /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"..\..\BuildLib\Windows\DX\InterMediate\GD101_LIB.res" ..\..\Platform\Windows\GD101_LIB.rc 
        Lib:
          C:\Program Files\Microsoft Visual Studio 10.0\VC\bin\Lib.exe /OUT:"..\..\BuildLib\Windows\DX\GD101_LIB.lib" /NOLOGO /SUBSYSTEM:WINDOWS ..\..\BuildLib\Windows\DX\InterMediate\GD101_LIB.res
          ..\..\BuildLib\Windows\DX\InterMediate\GD101_Core.obj
+         ..\..\BuildLib\Windows\DX\InterMediate\GD101_graphics.obj
      1>LINK : warning LNK4068: /MACHINE not specified; defaulting to X86
-         GD101_LIB_VS2010.vcxproj -> C:\GD101_LIB-DEV\Source\Script\windows\..\..\BuildLib\Windows\DX\GD101_LIB.lib
+     1>GD101_Core.obj : warning LNK4006: "bool isShaderLoaded" (?isShaderLoaded@@3_NA) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "int _nCmdShow" (?_nCmdShow@@3HA) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "wchar_t * tempUnicode" (?tempUnicode@@3PA_WA) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "struct HINSTANCE__ * g_hInst" (?g_hInst@@3PAUHINSTANCE__@@A) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "struct HWND__ * g_hWnd" (?g_hWnd@@3PAUHWND__@@A) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "enum D3D_DRIVER_TYPE g_driverType" (?g_driverType@@3W4D3D_DRIVER_TYPE@@A) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "enum D3D_FEATURE_LEVEL g_featureLevel" (?g_featureLevel@@3W4D3D_FEATURE_LEVEL@@A) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "struct ID3D11Device * g_pd3dDevice" (?g_pd3dDevice@@3PAUID3D11Device@@A) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "struct ID3D11DeviceContext * g_pImmediateContext" (?g_pImmediateContext@@3PAUID3D11DeviceContext@@A) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "struct IDXGISwapChain * g_pSwapChain" (?g_pSwapChain@@3PAUIDXGISwapChain@@A) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "struct ID3D11RenderTargetView * g_pRenderTargetView" (?g_pRenderTargetView@@3PAUID3D11RenderTargetView@@A) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "struct ID3D11VertexShader * g_pVertexShader" (?g_pVertexShader@@3PAUID3D11VertexShader@@A) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "struct ID3D11PixelShader * g_pPixelShader" (?g_pPixelShader@@3PAUID3D11PixelShader@@A) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "struct ID3D11InputLayout * g_pVertexLayout" (?g_pVertexLayout@@3PAUID3D11InputLayout@@A) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "struct ID3D11Buffer * g_pVertexBuffer" (?g_pVertexBuffer@@3PAUID3D11Buffer@@A) already defined in GD101_graphics.obj; second definition ignored
+     1>GD101_Core.obj : warning LNK4006: "struct tagMSG msg" (?msg@@3UtagMSG@@A) already defined in GD101_graphics.obj; second definition ignored
+         GD101_LIB_VS2010.vcxproj -> C:\GD101_LIB\master\Source\Script\windows\..\..\BuildLib\Windows\DX\GD101_LIB.lib
        FinalizeBuildStatus:
          Deleting file "..\..\BuildLib\Windows\DX\InterMediate\GD101_LIB.unsuccessfulbuild".
          Touching "..\..\BuildLib\Windows\DX\InterMediate\GD101_LIB.lastbuildstate".
-     1>Done Building Project "C:\GD101_LIB-DEV\Source\Script\windows\GD101_LIB_VS2010.vcxproj" (rebuild target(s)).
+     1>Done Building Project "C:\GD101_LIB\master\Source\Script\windows\GD101_LIB_VS2010.vcxproj" (rebuild target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:03.97
+Time Elapsed 00:00:05.51

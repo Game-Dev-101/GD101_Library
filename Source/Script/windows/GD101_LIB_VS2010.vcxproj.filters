@@ -19,9 +19,12 @@
     <ClInclude Include="..\..\Platform\Windows\Resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Platform\Windows\Graphics.h" />
+    <ClInclude Include="..\..\GD101_DEF.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="../../GD101_Core.cpp" />
+    <ClCompile Include="..\..\GD101_Graphics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../Platform/Windows/DX/Shader.fx">

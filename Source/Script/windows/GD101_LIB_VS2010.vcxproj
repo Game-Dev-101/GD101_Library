@@ -375,12 +375,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="../../GD101_Core.cpp" />
+    <ClCompile Include="..\..\GD101_Graphics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="../../Platform/Windows/DX/Shader.fx" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../../Platform/Windows/PlatformEntry.h" />
+    <ClInclude Include="..\..\GD101_DEF.h" />
+    <ClInclude Include="..\..\Platform\Windows\Graphics.h" />
     <ClInclude Include="..\..\Platform\Windows\Resource.h" />
     <ClInclude Include="..\..\Settings.h" />
   </ItemGroup>
