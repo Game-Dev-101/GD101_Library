@@ -39,6 +39,7 @@
 				CleanupDevice();
 
 				delete tempUnicode;
+				delete tempName;
 				return true;
 			}
  
@@ -65,7 +66,11 @@
 
 		// Create window
 		// Error disini, mau keluar dulu jalan2 
-		rc = { 0, 0, width, height };
+		//rc = { 0, 0, width, height };
+		rc.left = 0;
+		rc.top =  0;
+		rc.right = width;
+		rc.bottom = height;
 		AdjustWindowRect( &rc, WS_OVERLAPPEDWINDOW, FALSE );
 		g_hWnd = CreateWindow( windowName/*TEXT("")*/, windowName /*TEXT("")*/,
 							   WS_OVERLAPPED | WS_MINIMIZEBOX | WS_SYSMENU, // Ini untuk FIXED Size Window
@@ -97,18 +102,22 @@
 		}
 		return 0;
 	}
-	int LoadShaderFile(wchar_t * pFileName)
+	int LoadShaderFile(const char * pFileName)
 	{
 		int hr = 0;
+		#if defined(UNICODE)
+			tempName = new wchar_t[strlen(pFileName) + 1];
+			mbstowcs_s(NULL, tempName, strlen(pFileName) + 1, pFileName, strlen(pFileName));
 
+		#endif
 		// Compile the vertex shader
 		#if defined(DIRECTX)
 			ID3DBlob* pVSBlob = NULL;
-			hr = CompileShaderFromFile( pFileName, "VS", "vs_4_0", &pVSBlob );
+			hr = CompileShaderFromFile( tempName, "VS", "vs_4_0", &pVSBlob );
 			if( FAILED( hr ) )
 			{
 				MessageBox( NULL,
-							L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
+							L"The FX1 file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
 				return hr;
 			}
 
@@ -139,11 +148,11 @@
 
 			// Compile the pixel shader
 			ID3DBlob* pPSBlob = NULL;
-			hr = CompileShaderFromFile( pFileName, "PS", "ps_4_0", &pPSBlob );
+			hr = CompileShaderFromFile( tempName, "PS", "ps_4_0", &pPSBlob );
 			if( FAILED( hr ) )
 			{
 				MessageBox( NULL,
-							L"The FX file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
+							L"The FX2 file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
 				return hr;
 			}
 

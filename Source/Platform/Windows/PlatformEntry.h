@@ -58,7 +58,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 bool EndLoop();
 
 bool isShaderLoaded;
-int LoadShaderFile(wchar_t *);
+int LoadShaderFile(const char * pFileName);
 
 void UnLoadShaderFIle();
 int SetShader();
@@ -72,6 +72,7 @@ extern int Main();
 MSG msg = {0};
 
 wchar_t * tempUnicode;
+wchar_t * tempName;
 
 
 #endif //__PLATFORM_ENTRY__
