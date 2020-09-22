@@ -33,6 +33,8 @@
 
         void Execute();
 
+		HRESULT CompileShaderDirectX( const char* data);
+
         HRESULT CompileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut );
         //--------------------------------------------------------------------------------------
         // Structures

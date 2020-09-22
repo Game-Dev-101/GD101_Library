@@ -1,9 +1,4 @@
-#include "GD101_DEF.h"
 
-struct DrawVertex
-{
-	FLOAT2 pos;
-};
 
 // DirectX standart ViewPort
 //////////////////////////////////////////////////
@@ -18,33 +13,49 @@ struct DrawVertex
 #if defined(_WINDOWS) || defined(WIN32) || defined(_WIN32)
     #include "Platform\Windows\Graphics.h"
 	#include "Platform\Windows\Shared_Data.h"
-
-	DrawVertex vertices[2] ;
-
-	int DrawLine(int x0, int y0, int x1, int y1)
+	struct DrawVertex
 	{
-		//DrawVertex lineVertices[] = {
-		//FLOAT2( 0.0f, 0.5f),
-		//FLOAT2( 0.5f, -0.5f)	}; 
+		FLOAT3 pos;
+	};
+	DrawVertex vertices[5] ;
 
+	void GraphicsInit()
+	{
+
+	}
+
+	int DrawLine(int x0, int y0, int x1, int y1 , COLOR4 color)
+	{
 		// Anchor pointnya ditengah
-		// Sementara Hardcoded
-		FLOAT2 pos0( -1.0f,  -1.0f);
+		float midX = (float)rc.right/2.0f;
+		float midY = (float)rc.bottom/2.0f;
 
-		FLOAT2 pos1(0.0f, 0.0f);
+		float xx0 = x0 <= (rc.right/2) ? ( (float)x0/midX ) - 1.0f : (float)(x0-midX) / midX ;
+		float yy0 = y0 <= (rc.bottom/2) ? ( ((float)y0/midY ) - 1.0f)*(-1) : ( (float)(y0-midY) / midY ) *(-1);
+
+		float xx1 = x1 <= (rc.right/2) ? ( (float)x1/midX ) - 1.0f : (float)(x1-midX) / midX ;
+		float yy1 = y1 <= (rc.bottom/2) ? ( ((float)y1/midY ) - 1.0f)*(-1) : ( (float)(y1-midY) / midY ) *(-1);
+
+		FLOAT3 pos0( xx0,  yy0, 0.0f);
+		FLOAT3 pos1( xx1, yy1, 0.0f);
 
 		vertices[0].pos = pos0;
 		vertices[1].pos = pos1;
+		vertices[2].pos = pos1;
+
 
 		D3D11_BUFFER_DESC bd;
 		ZeroMemory( &bd, sizeof(bd) );
 		bd.Usage = D3D11_USAGE_DEFAULT;
-		bd.ByteWidth = sizeof( DrawVertex ) * 2;
+		bd.ByteWidth = sizeof( DrawVertex ) * 3;
 		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		bd.CPUAccessFlags = 0;
 		D3D11_SUBRESOURCE_DATA InitData;
 		ZeroMemory( &InitData, sizeof(InitData) );
 		InitData.pSysMem = vertices;
+	
+		if(g_pVertexBuffer) g_pVertexBuffer->Release();
+		if( g_pImmediateContext ) g_pImmediateContext->Release();
 
 		g_pd3dDevice->CreateBuffer( &bd, &InitData, &g_pVertexBuffer );
 
@@ -56,10 +67,68 @@ struct DrawVertex
 		// Set primitive topology
 		g_pImmediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_LINELIST );
 
+		g_pImmediateContext->VSSetShader( g_pVertexShader, NULL, 0 );
+		g_pImmediateContext->PSSetShader( g_pPixelShader, NULL, 0 );
+		g_pImmediateContext->Draw( 2, 0 );
+
+		return 0;
+	}
+
+	int DrawBox(int x0, int y0, int width, int height, COLOR4 color)
+	{
+		float midX = (float)rc.right/2.0f;
+		float midY = (float)rc.bottom/2.0f;
+
+		float tWidth = x0 + width ;
+		float tHheight = y0 + height;
+
+		float xx0 = x0 <= midX ? ( (float)x0/midX ) - 1.0f : (float)(x0-midX) / midX ;
+		float yy0 = y0 <= midY ? ( ((float)y0/midY ) - 1.0f)*(-1) : ( (float)(y0-midY) / midY ) *(-1);
+
+		tWidth = tWidth <= midX ? ( (float)tWidth/midX ) - 1.0f : (float)(tWidth-midX) / midX ;
+		tHheight = tHheight <= midY ? ( ((float)tHheight/midY ) - 1.0f)*(-1) : ( (float)(tHheight-midY) / midY ) *(-1);
+
+
+		FLOAT3 pos0(  xx0, yy0, 0.0f);
+		FLOAT3 pos1(  tWidth, yy0, 0.0f);
+		FLOAT3 pos2( tWidth, tHheight, 0.0f);
+
+		FLOAT3 pos3(  xx0, tHheight, 0.0f);
+		FLOAT3 pos4(  xx0, yy0, 0.0f);
+
+		vertices[0].pos = pos0;
+		vertices[1].pos = pos1;
+		vertices[2].pos = pos2;
+
+		vertices[3].pos = pos3;
+		vertices[4].pos = pos4;
+
+		D3D11_BUFFER_DESC bd;
+		ZeroMemory( &bd, sizeof(bd) );
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		bd.ByteWidth = sizeof( DrawVertex ) * 5;
+		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bd.CPUAccessFlags = 0;
+		D3D11_SUBRESOURCE_DATA InitData;
+		ZeroMemory( &InitData, sizeof(InitData) );
+		InitData.pSysMem = vertices;
+
+		if(g_pVertexBuffer) g_pVertexBuffer->Release();
+		if( g_pImmediateContext ) g_pImmediateContext->Release();
+
+		g_pd3dDevice->CreateBuffer( &bd, &InitData, &g_pVertexBuffer );
+
+		// Set vertex buffer
+		UINT stride = sizeof( DrawVertex );
+		UINT offset = 0;
+		g_pImmediateContext->IASetVertexBuffers( 0, 1, &g_pVertexBuffer, &stride, &offset );
+
+		// Set primitive topology
+		g_pImmediateContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP );
 
 		g_pImmediateContext->VSSetShader( g_pVertexShader, NULL, 0 );
 		g_pImmediateContext->PSSetShader( g_pPixelShader, NULL, 0 );
-		g_pImmediateContext->Draw( 3, 0 );
+		g_pImmediateContext->Draw( 5, 0 );
 
 		return 0;
 	}

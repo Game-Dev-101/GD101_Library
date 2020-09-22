@@ -24,6 +24,8 @@
 #ifndef __GD_101_LIB__
 #define __GD_101_LIB__
 
+#include "GD101_DEF.h"
+
 //--------- Core ---------------//////////////////////////////////////
 extern bool GD101_InitWindow(const char* windowName, int height, int width);
 extern int ScreenFlip();
@@ -33,7 +35,9 @@ extern bool EndLoop();
 //---------- Graphics ----------/////////////////////////////////////
 extern int LoadShaderFile(const char * pFileName);
 extern void ExecuteShader();
-extern int DrawLine(int x0, int y0, int x1, int y1);
+//extern int DrawLine(int x0, int y0, int x1, int y1);
+extern int DrawLine(int x0, int y0, int x1, int y1, COLOR4 color);
+extern int DrawBox(int x0, int y0, int width, int height, COLOR4 color);
 
 
 //------------- Inputs ----------/////////////////////////////////////

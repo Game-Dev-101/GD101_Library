@@ -9,12 +9,24 @@ int Main()
 
 	LoadShaderFile("SHAPE.fx");
 
+	float x =0;
+	float y =0;
+	bool isRight = false;
 	// Main message loop
 	while(!EndLoop())
 	{
 		ClearScreen();
 
-		DrawLine(20,100,0,0);
+		if(x <= 0  ) isRight =true;
+		else if( x >= 800) isRight = false;
+
+		if(isRight) x += 0.5f;
+		else x -= 0.5f;
+
+		//y+= 0.2f;
+		DrawLine(x, 0, 600, 500, COLOR4(12,12,12,1));
+
+		DrawBox(100, 50, 200, 50,  COLOR4(12,12,12,1));
 		//ExecuteShader();
 
 		ScreenFlip();

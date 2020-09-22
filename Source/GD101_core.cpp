@@ -1,9 +1,14 @@
 #include "Settings.h"
-
+		
 //-----------------------------------------------------------------------------------------------------------
 //		FOR WINDOWS PLATFORM
 //-----------------------------------------------------------------------------------------------------------
 #if defined(_WINDOWS) || defined(WIN32) || defined(_WIN32)
+
+#include <string>
+#include "Platform\Windows\DX\PxShaderYellow.h"
+#include "Platform\Windows\DX\VShaderNormal.h"
+
 	bool GD101_InitWindow(const char * windowName, int height, int width)
 	{
 		#if defined(UNICODE)
@@ -16,7 +21,7 @@
 			if( !InitWindow(windowName, height, width)  )
 			return false;
 		#endif
-
+			
 		if( !InitDevice() )
 		{
 			CleanupDevice();
@@ -104,6 +109,7 @@
 	}
 	int LoadShaderFile(const char * pFileName)
 	{
+
 		int hr = 0;
 		#if defined(UNICODE)
 			tempName = new wchar_t[strlen(pFileName) + 1];
@@ -112,8 +118,12 @@
 		#endif
 		// Compile the vertex shader
 		#if defined(DIRECTX)
-			ID3DBlob* pVSBlob = NULL;
-			hr = CompileShaderFromFile( tempName, "VS", "vs_4_0", &pVSBlob );
+		ID3DBlob* pVSBlob = NULL;
+		std::string vert = "float4 VS( float4 Pos : POSITION ) : SV_POSITION  { return Pos; }";
+
+		std::string pix = "float4 PS( float4 Pos : SV_POSITION ) : SV_Target {  return float4( 1.0f, 1.0f, 1.0f, 1.0f );   }";
+
+		hr = D3DCompile( vert.c_str(), vert.length(), nullptr, nullptr, nullptr, "VS", "vs_4_0", 0, 0, &pVSBlob, nullptr);
 			if( FAILED( hr ) )
 			{
 				MessageBox( NULL,
@@ -121,6 +131,7 @@
 				return hr;
 			}
 
+			//SIZE_T size = 436;
 			// Create the vertex shader
 			hr = g_pd3dDevice->CreateVertexShader( pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &g_pVertexShader );
 			if( FAILED( hr ) )
@@ -137,8 +148,7 @@
 			UINT numElements = ARRAYSIZE( layout );
 
 			// Create the input layout
-			hr = g_pd3dDevice->CreateInputLayout( layout, numElements, pVSBlob->GetBufferPointer(),
-												  pVSBlob->GetBufferSize(), &g_pVertexLayout );
+			hr = g_pd3dDevice->CreateInputLayout( layout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize() , &g_pVertexLayout );
 			pVSBlob->Release();
 			if( FAILED( hr ) )
 				return hr;
@@ -148,7 +158,7 @@
 
 			// Compile the pixel shader
 			ID3DBlob* pPSBlob = NULL;
-			hr = CompileShaderFromFile( tempName, "PS", "ps_4_0", &pPSBlob );
+			hr =  D3DCompile( pix.c_str(), pix.length(), nullptr, nullptr, nullptr, "PS", "ps_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0, &pPSBlob, nullptr);
 			if( FAILED( hr ) )
 			{
 				MessageBox( NULL,
@@ -161,7 +171,7 @@
 			pPSBlob->Release();
 			if( FAILED( hr ) )
 				return hr;
-
+			
 		#elif defined(OPENGL)
 	
 			  int vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -178,7 +188,7 @@
 			 }
 		#endif
 		isShaderLoaded= true;
-		SetShader();
+		//SetShader();
 		return 1;
 	}
 	int SetShader()
@@ -223,6 +233,11 @@
 	//--------------------------------------------------------------------------------------
 	// Helper for compiling shaders with D3DX11
 	//--------------------------------------------------------------------------------------
+
+	//HRESULT CompileShaderDirectX( const char* data)
+	//{
+
+	//}
 	HRESULT CompileShaderFromFile( WCHAR* szFileName, LPCSTR szEntryPoint, LPCSTR szShaderModel, ID3DBlob** ppBlobOut )
 	{
 		HRESULT hr = S_OK;
@@ -239,6 +254,7 @@
 		ID3DBlob* pErrorBlob;
 		hr = D3DX11CompileFromFile( szFileName, NULL, NULL, szEntryPoint, szShaderModel, 
 			dwShaderFlags, 0, NULL, ppBlobOut, &pErrorBlob, NULL );
+		
 		if( FAILED(hr) )
 		{
 			if( pErrorBlob != NULL )

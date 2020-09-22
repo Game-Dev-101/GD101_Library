@@ -383,6 +383,8 @@
   <ItemGroup>
     <ClInclude Include="../../Platform/Windows/PlatformEntry.h" />
     <ClInclude Include="..\..\GD101_DEF.h" />
+    <ClInclude Include="..\..\Platform\Windows\DX\PxShaderYellow.h" />
+    <ClInclude Include="..\..\Platform\Windows\DX\VShaderNormal.h" />
     <ClInclude Include="..\..\Platform\Windows\Graphics.h" />
     <ClInclude Include="..\..\Platform\Windows\Resource.h" />
     <ClInclude Include="..\..\Platform\Windows\Shared_Data.h" />
