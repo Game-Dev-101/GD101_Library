@@ -60,10 +60,11 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
 bool EndLoop();
 
 bool isShaderLoaded;
+int InitStandartShader();
 int LoadShaderFile(const char * pFileName);
 
 void UnLoadShaderFIle();
-int SetShader();
+int ActivateShader();
 
 int ScreenFlip();
 void ExecuteShader();

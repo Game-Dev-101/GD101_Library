@@ -107,6 +107,86 @@
 		}
 		return 0;
 	}
+
+	int InitStandartShader()
+	{
+		int hr = 0;
+		// Compile the vertex shader
+		#if defined(DIRECTX)
+		ID3DBlob* pVSBlob = NULL;
+		std::string vert = "float4 VS( float4 Pos : POSITION ) : SV_POSITION  { return Pos; }";
+
+		std::string pix = "float4 PS( float4 Pos : SV_POSITION ) : SV_Target {  return float4( 1.0f, 1.0f, 1.0f, 1.0f );   }";
+
+		hr = D3DCompile( vert.c_str(), vert.length(), nullptr, nullptr, nullptr, "VS", "vs_4_0", 0, 0, &pVSBlob, nullptr);
+			if( FAILED( hr ) )
+			{
+				MessageBox( NULL,
+							L"The FX1 file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
+				return hr;
+			}
+
+			//SIZE_T size = 436;
+			// Create the vertex shader
+			hr = g_pd3dDevice->CreateVertexShader( pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize(), NULL, &g_pVertexShader );
+			if( FAILED( hr ) )
+			{	
+				pVSBlob->Release();
+				return hr;
+			}
+
+			// Define the input layout
+			D3D11_INPUT_ELEMENT_DESC layout[] =
+			{
+				{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			};
+			UINT numElements = ARRAYSIZE( layout );
+
+			// Create the input layout
+			hr = g_pd3dDevice->CreateInputLayout( layout, numElements, pVSBlob->GetBufferPointer(), pVSBlob->GetBufferSize() , &g_pVertexLayout );
+			pVSBlob->Release();
+			if( FAILED( hr ) )
+				return hr;
+
+			// Set the input layout
+			g_pImmediateContext->IASetInputLayout( g_pVertexLayout );
+
+			// Compile the pixel shader
+			ID3DBlob* pPSBlob = NULL;
+			hr =  D3DCompile( pix.c_str(), pix.length(), nullptr, nullptr, nullptr, "PS", "ps_4_0", D3DCOMPILE_ENABLE_STRICTNESS, 0, &pPSBlob, nullptr);
+			if( FAILED( hr ) )
+			{
+				MessageBox( NULL,
+							L"The FX2 file cannot be compiled.  Please run this executable from the directory that contains the FX file.", L"Error", MB_OK );
+				return hr;
+			}
+
+			// Create the pixel shader
+			hr = g_pd3dDevice->CreatePixelShader( pPSBlob->GetBufferPointer(), pPSBlob->GetBufferSize(), NULL, &g_pPixelShader );
+			pPSBlob->Release();
+			if( FAILED( hr ) )
+				return hr;
+			
+		#elif defined(OPENGL)
+	
+			  int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+			 glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+			 glCompileShader(vertexShader);
+			   check for shader compile errors
+			 int success;
+			 char infoLog[512];
+			 glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+			 if (!success)
+			 {
+				 glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+				  std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+			 }
+		#endif
+		isShaderLoaded= true;
+
+		return 0;
+	}
+
 	int LoadShaderFile(const char * pFileName)
 	{
 
@@ -191,7 +271,7 @@
 		//SetShader();
 		return 1;
 	}
-	int SetShader()
+	int ActivateShader()
 	{
 		int hr = 0;
 
@@ -347,6 +427,8 @@
 		vp.TopLeftY = 0;
 		g_pImmediateContext->RSSetViewports( 1, &vp );
 
+		InitStandartShader();
+
 		return 1;
 	}
 	//--------------------------------------------------------------------------------------
@@ -434,6 +516,118 @@
 //-----------------------------------------------------------------------------------------------------------
 #elif defined(PLAYSTATION_2)
 
+void InitGS()
+{
+
+	// Enable the zbuffer.
+	z.enable = DRAW_ENABLE;
+	z.mask = 0;
+	z.method = ZTEST_METHOD_GREATER_EQUAL;
+	z.zsm = GS_ZBUF_32;
+	z.address = graph_vram_allocate( frame.width, frame.height, z.zsm, GRAPH_ALIGN_PAGE);
+
+	// Initialize the screen and tie the first framebuffer to the read circuits.
+	graph_initialize(frame.address, frame.width, frame.height, frame.psm, 0, 0);
+
+    
+}
+void InitDrawingEnvironment()
+{
+    packet_t *packet = packet_init(16,PACKET_NORMAL);
+
+	// This is our generic qword pointer.
+	qword_t *q = packet->data;
+
+	// This will setup a default drawing environment.
+	q = draw_setup_environment(q,0, &frame, &z);
+
+	// Now reset the primitive origin to 2048-width/2,2048-height/2.
+	q = draw_primitive_xyoffset(q,0,(2048-320),(2048-256));
+
+	// Finish setting up the environment.
+	q = draw_finish(q);
+
+	// Now send the packet, no need to wait since it's the first.
+	dma_channel_send_normal(DMA_CHANNEL_GIF,packet->data,q - packet->data, 0, 0);
+	dma_wait_fast();
+
+	packet_free(packet);
+    
+}
+bool EndLoop()
+{
+    //
+    return false;
+}
+
+int ScreenFlip()
+{
+    		// Define our dmatag for the dma chain.
+		DMATAG_END(dmatag,(q-current->data)-1,0,0,0);
+
+		// Now send our current dma chain.
+		dma_wait_fast();
+		dma_channel_send_chain(DMA_CHANNEL_GIF,current->data, q - current->data, 0, 0);
+
+		// Now switch our packets so we can process data while the DMAC is working.
+		context ^= 1;
+
+		// Wait for scene to finish drawing
+		draw_wait_finish();
+
+		graph_wait_vsync();
+        
+        return 0;
+}
+int ClearScreen()
+{
+    current = packets[context];
+    
+    // Now grab our qword pointer and increment past the dmatag.
+    q = dmatag;
+    q++;
+
+    // Clear framebuffer but don't update zbuffer.
+    q = draw_disable_tests(q,0,&z);
+    q = draw_clear(q,0,2048.0f-320.0f,2048.0f-256.0f, frame.width, frame.height,0x00,0x20,0x4C);
+    q = draw_enable_tests(q,0,&z);
+    return 0;
+}
+
+bool GD101_InitWindow(const char * windowName, int height, int width)
+{
+    // 32-bit 640x512 framebuffer, kita gunakan fixed size windows
+	frame.width = 640;
+	frame.height = 512;
+	frame.mask = 0;
+	frame.psm = GS_PSM_32;
+	frame.address = graph_vram_allocate(frame.width, frame.height, frame.psm, GRAPH_ALIGN_PAGE);
+    
+    InitGS();
+    InitDrawingEnvironment();
+    
+    return true;
+}
+
+// EntryPoint
+int main(int argc, char **argv)
+{
+    	// Init GIF dma channel.
+	dma_channel_initialize(DMA_CHANNEL_GIF,NULL,0);
+	dma_channel_fast_waits(DMA_CHANNEL_GIF);
+    
+    
+    packets[0] = packet_init(100,PACKET_NORMAL);
+	packets[1] = packet_init(100,PACKET_NORMAL);
+
+	// Create the view_screen matrix.
+	create_view_screen(view_screen, graph_aspect_ratio(), -3.00f, 3.00f, -3.00f, 3.00f, 1.00f, 2000.00f);
+
+	// Wait for any previous dma transfers to finish before starting.
+	dma_wait_fast();
+    
+    return Main();
+}
 //-----------------------------------------------------------------------------------------------------------
 //		FOR WEBGL PLATFORM
 //-----------------------------------------------------------------------------------------------------------

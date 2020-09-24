@@ -37,7 +37,23 @@ struct FLOAT3
 
 };
 
-// FLOAT3
+// FLOAT4
+struct FLOAT4
+{
+    float r;
+    float g;
+    float b;
+	float a;
+
+#ifdef __cplusplus
+    FLOAT4() {};
+    FLOAT4(float _r, float _g, float _b, float _a) : r(_r), g(_g), b(_b), a(_a) {};
+
+#endif // __cplusplus
+
+};
+
+// COLOR4
 struct COLOR4
 {
     float r;
@@ -59,3 +75,4 @@ struct COLOR4
 //----------------------------------------
 
 #endif // __GD_101_DEF__
+
