@@ -46,8 +46,8 @@ MATRIX local_screen;
 prim_t prim;
 color_t color;
 
-xyz_t   *verts;
-color_t *colors;
+/* xyz_t   *verts;
+color_t *colors; */
 
 // The data packets for double buffering dma sends.
 packet_t *packets[2];
@@ -55,8 +55,7 @@ packet_t *current;
 qword_t *q;
 qword_t *dmatag;
 
-//
-
+// Method Umum Untuk Semua
 bool EndLoop();
 
 int ScreenFlip();

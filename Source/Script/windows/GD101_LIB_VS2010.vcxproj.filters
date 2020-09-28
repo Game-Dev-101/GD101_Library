@@ -23,7 +23,6 @@
     <ClInclude Include="..\..\GD101_DEF.h" />
     <ClInclude Include="..\..\Platform\Windows\Shared_Data.h" />
     <ClInclude Include="..\..\Platform\Windows\DX\PxShaderYellow.h" />
-    <ClInclude Include="..\..\Platform\Windows\DX\VShaderNormal.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="../../GD101_Core.cpp" />

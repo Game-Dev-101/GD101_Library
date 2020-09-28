@@ -6,8 +6,8 @@
 
 	void ColorFilter(COLOR4 data);
 
-	int DrawLine(int x0, int y0, int x1, int y1, COLOR4 color);
-	int DrawBox(int x0, int y0, int width, int height, COLOR4 color);
+	int DrawLine(float x0, float y0, float x1, float y1, COLOR4 pColor);
+	int DrawBox(float x0, float y0, float width, float height, COLOR4 color);
 
 
 

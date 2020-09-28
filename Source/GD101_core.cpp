@@ -515,10 +515,9 @@
 //		FOR PLAYSTATION_2 PLATFORM
 //-----------------------------------------------------------------------------------------------------------
 #elif defined(PLAYSTATION_2)
-
+#include <iostream>
 void InitGS()
 {
-
 	// Enable the zbuffer.
 	z.enable = DRAW_ENABLE;
 	z.mask = 0;
@@ -528,31 +527,23 @@ void InitGS()
 
 	// Initialize the screen and tie the first framebuffer to the read circuits.
 	graph_initialize(frame.address, frame.width, frame.height, frame.psm, 0, 0);
-
-    
 }
 void InitDrawingEnvironment()
 {
     packet_t *packet = packet_init(16,PACKET_NORMAL);
-
 	// This is our generic qword pointer.
 	qword_t *q = packet->data;
-
 	// This will setup a default drawing environment.
 	q = draw_setup_environment(q,0, &frame, &z);
-
 	// Now reset the primitive origin to 2048-width/2,2048-height/2.
 	q = draw_primitive_xyoffset(q,0,(2048-320),(2048-256));
-
 	// Finish setting up the environment.
 	q = draw_finish(q);
-
 	// Now send the packet, no need to wait since it's the first.
 	dma_channel_send_normal(DMA_CHANNEL_GIF,packet->data,q - packet->data, 0, 0);
 	dma_wait_fast();
 
-	packet_free(packet);
-    
+	packet_free(packet);   
 }
 bool EndLoop()
 {
@@ -561,20 +552,17 @@ bool EndLoop()
 }
 
 int ScreenFlip()
-{
+{      
     		// Define our dmatag for the dma chain.
 		DMATAG_END(dmatag,(q-current->data)-1,0,0,0);
 
 		// Now send our current dma chain.
 		dma_wait_fast();
 		dma_channel_send_chain(DMA_CHANNEL_GIF,current->data, q - current->data, 0, 0);
-
 		// Now switch our packets so we can process data while the DMAC is working.
 		context ^= 1;
-
 		// Wait for scene to finish drawing
 		draw_wait_finish();
-
 		graph_wait_vsync();
         
         return 0;
@@ -582,8 +570,9 @@ int ScreenFlip()
 int ClearScreen()
 {
     current = packets[context];
-    
-    // Now grab our qword pointer and increment past the dmatag.
+    // Grab our dmatag pointer for the dma chain.
+    dmatag = current->data;
+   
     q = dmatag;
     q++;
 
@@ -591,6 +580,7 @@ int ClearScreen()
     q = draw_disable_tests(q,0,&z);
     q = draw_clear(q,0,2048.0f-320.0f,2048.0f-256.0f, frame.width, frame.height,0x00,0x20,0x4C);
     q = draw_enable_tests(q,0,&z);
+    
     return 0;
 }
 
@@ -606,27 +596,33 @@ bool GD101_InitWindow(const char * windowName, int height, int width)
     InitGS();
     InitDrawingEnvironment();
     
+    printf("PACKETS!\n");
+    packets[0] = packet_init(100,PACKET_NORMAL);
+	packets[1] = packet_init(100,PACKET_NORMAL);
+
+    printf("CREATE VIEW!\n");
+	// Create the view_screen matrix.
+	create_view_screen(view_screen, graph_aspect_ratio(), -3.00f, 3.00f, -3.00f, 3.00f, 1.00f, 2000.00f);
+    	// Wait for any previous dma transfers to finish before starting.
+	dma_wait_fast();
+    
     return true;
 }
 
 // EntryPoint
 int main(int argc, char **argv)
 {
+    printf("INITTTT!\n");
     	// Init GIF dma channel.
 	dma_channel_initialize(DMA_CHANNEL_GIF,NULL,0);
 	dma_channel_fast_waits(DMA_CHANNEL_GIF);
     
-    
-    packets[0] = packet_init(100,PACKET_NORMAL);
-	packets[1] = packet_init(100,PACKET_NORMAL);
-
-	// Create the view_screen matrix.
-	create_view_screen(view_screen, graph_aspect_ratio(), -3.00f, 3.00f, -3.00f, 3.00f, 1.00f, 2000.00f);
-
-	// Wait for any previous dma transfers to finish before starting.
-	dma_wait_fast();
-    
-    return Main();
+    Main();   
+    packet_free(packets[0]);
+	packet_free(packets[1]);
+	// Sleep
+	SleepThread();
+    return 0;
 }
 //-----------------------------------------------------------------------------------------------------------
 //		FOR WEBGL PLATFORM

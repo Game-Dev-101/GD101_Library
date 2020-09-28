@@ -45,4 +45,8 @@ EE_LIBS += -lc -lkernel
 
 ##### Kumpulkan Objectfile menjadi satu archieve .a atau static library
 $(EE_LIB): $(EE_OBJS)
-	$(EE_AR) cru $(EE_LIB) $(EE_OBJS)
+	$(EE_AR) rc $(EE_LIB) $(EE_OBJS)
+	cp $(EE_LIB) $(BUILD_DIR)
+	rm -f $(EE_LIB)
+    
+    

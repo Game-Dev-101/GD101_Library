@@ -24,7 +24,7 @@
 
 	}
 
-	int DrawLine(int x0, int y0, int x1, int y1 , COLOR4 color)
+	int DrawLine(float x0, float y0, float x1, float y1 , COLOR4 color)
 	{
 		// Anchor pointnya ditengah
 
@@ -32,11 +32,11 @@
 		float midX = (float)rc.right/2.0f;
 		float midY = (float)rc.bottom/2.0f;
 
-		float xx0 = x0 <= (rc.right/2) ? ( (float)x0/midX ) - 1.0f : (float)(x0-midX) / midX ;
-		float yy0 = y0 <= (rc.bottom/2) ? ( ((float)y0/midY ) - 1.0f)*(-1) : ( (float)(y0-midY) / midY ) *(-1);
+		float xx0 = x0 <= midX ? ( (float)x0/midX ) - 1.0f : (float)(x0-midX) / midX ;
+		float yy0 = y0 <= midY ? ( ((float)y0/midY ) - 1.0f)*(-1) : ( (float)(y0-midY) / midY ) *(-1);
 
-		float xx1 = x1 <= (rc.right/2) ? ( (float)x1/midX ) - 1.0f : (float)(x1-midX) / midX ;
-		float yy1 = y1 <= (rc.bottom/2) ? ( ((float)y1/midY ) - 1.0f)*(-1) : ( (float)(y1-midY) / midY ) *(-1);
+		float xx1 = x1 <= midX ? ( (float)x1/midX ) - 1.0f : (float)(x1-midX) / midX ;
+		float yy1 = y1 <= midY ? ( ((float)y1/midY ) - 1.0f)*(-1) : ( (float)(y1-midY) / midY ) *(-1);
 
 		// Algoritma Kedua
 		//float xx0 = ((x0*2.0f)/rc.right) - 1.0f;
@@ -51,7 +51,6 @@
 		vertices[0].pos = pos0;
 		vertices[1].pos = pos1;
 		vertices[2].pos = pos1;
-
 
 		ZeroMemory( &bd, sizeof(bd) );
 		bd.Usage = D3D11_USAGE_DEFAULT;
@@ -82,7 +81,7 @@
 		return 0;
 	}
 
-	int DrawBox(int x0, int y0, int width, int height, COLOR4 color)
+	int DrawBox(float x0, float y0, float width, float height, COLOR4 color)
 	{
 		// Algortima Pertama
 		float midX = (float)rc.right/2.0f;
@@ -172,26 +171,65 @@
 //-----------------------------------------------------------------------------------------------------------
 #elif defined(PLAYSTATION_2)
     #include "Platform/PlayStation_2/Graphics.h"
+    #include <iostream>
     
-     int points_count = 3;
-     int vertex_count = 3;
+     int points_count = 5;
+     int vertex_count = 5;
     // Allocate calculation space.
 	VECTOR* temp_vertices = (VECTOR*)memalign(128, sizeof(VECTOR) * vertex_count);
 	// Allocate register space.
 	xyz_t* verts  = (xyz_t*)memalign(128, sizeof(vertex_t) * vertex_count);
 	color_t * colors = (color_t *)memalign(128, sizeof(color_t)  * vertex_count);
     
-    int DrawLine(int x0, int y0, int x1, int y1, COLOR4 pColor)
+     int points[5] = {
+       0,  1,  2, 3, 4
+     };
+
+     VECTOR colours[5] = {
+      { 1.00f, 1.00f, 1.00f, 1.00f },
+      { 1.00f, 1.00f, 1.00f, 1.00f },
+      { 1.00f, 1.00f, 1.00f, 1.00f },
+      
+      { 1.00f, 1.00f, 1.00f, 1.00f },
+      { 1.00f, 1.00f, 1.00f, 1.00f }
+      };
+    
+    int DrawLine(float x0, float y0, float x1, float y1, COLOR4 pColor)
     {
-        float midX = (float)frame.width/2.0f;
-		float midY = (float)frame.height/2.0f;
+        printf("DRAWLINES\n");
+        
+        // Mid dari 640x512
+        float midX = 320.0f;
+		float midY = 256.0f;
+        
+        printf("midX = %f\n", midX);
+        printf("midY = %f\n", midY);
+        // masih belum tau gmn panjang lebarnya... sementara pake ini hardcoded
+        // x = 45.00f
+        // y = 33.50f
+        
+        // Algo ketiga
+	/* 	float xx0 = x0 <= midX ? (( x0/midX )*(45.00f)) - 45.00f:  ((x0-midX) / midX) *45.00f ;
+		float yy0 = y0 <= midY ? ( ( y0/midY ) - 33.50f)*(-1.0f) : (  (y0-midY) / midY ) *(-33.50f);
 
-		float xx0 = x0 <= (midX/2) ? ( (float)x0/midX ) - 1.0f : (float)(x0-midX) / midX ;
-		float yy0 = y0 <= (midY/2) ? ( ((float)y0/midY ) - 1.0f)*(-1) : ( (float)(y0-midY) / midY ) *(-1);
+		float xx1 = x1 <= midX ? (( x1/midX )*(45.00f)) - 45.00f :  ((x1-midX) / midX) *45.00f ;
+		float yy1 = y1 <= midY ? ( ( y1/midY ) - 33.50f)*(-1.0f) : (  (y1-midY) / midY ) *(-33.50f); */
+        
+		float xx0 = ((x0 - midX)/midX) * 45.00f;
+		float yy0 = ((y0 - midY)/midY) * -33.50f;
 
-		float xx1 = x1 <= (midX/2) ? ( (float)x1/midX ) - 1.0f : (float)(x1-midX) / midX ;
-		float yy1 = y1 <= (midY/2) ? ( ((float)y1/midY ) - 1.0f)*(-1) : ( (float)(y1-midY) / midY ) *(-1);
-
+		float xx1 = ((x1 - midX)/midX) * 45.00f;
+		float yy1 = ((y1 - midY)/midY) * -33.50f;
+        
+/*         VECTOR vertices[3] = {
+          {  0.00f,  33.50f,  10.00f, 1.00f },
+          {  0.00f,  -33.50f, 10.00f, 1.00f },
+          {  -45.00f, 0.00f,  10.00f, 1.00f }
+         }; */
+          VECTOR vertices[2] = {
+          {  xx0,  yy0,  10.00f, 1.00f },
+          {  xx1,  yy1, 10.00f, 1.00f }
+         };
         	// Define the triangle primitive we want to use.
         prim.type = PRIM_LINE_STRIP;
         prim.shading = PRIM_SHADE_GOURAUD;
@@ -207,25 +245,7 @@
         color.b = 0x80;
         color.a = 0x80;
         color.q = 1.0f;
-        
-         int points[3] = {
-           0,  1,  2
-         };
-
-		 VECTOR vertices[3] = {
-          {  0.00f,  30.00f,  10.00f, 1.00f },
-          {  0.00f,  -30.00f, -10.00f, 1.00f },
-          {  -10.00f, 0.00f,  10.00f, 1.00f }
-         };
-
-         VECTOR colours[3] = {
-          { 1.00f, 1.00f, 1.00f, 1.00f },
-          { 1.00f, 1.00f, 1.00f, 1.00f },
-          { 1.00f, 1.00f, 1.00f, 1.00f },
-
-         };
-        
-        
+         
         // Create the local_world matrix.
 		create_local_world(local_world, object_position, object_rotation);
 
@@ -244,14 +264,11 @@
 		// Convert floating point colours to fixed point.
 		draw_convert_rgbq(colors, vertex_count, (vertex_f_t*)temp_vertices, (color_f_t*)colours, 0x80);
 
-		// Grab our dmatag pointer for the dma chain.
-		dmatag = current->data;
-
-
+        
 		// Draw the triangles using triangle primitive type.
 		q = draw_prim_start(q,0,&prim, &color);
 
-		for(i = 0; i < points_count; i++)
+		for(i = 0; i < 2 /*points_count*/; i++)
 		{
 			q->dw[0] = colors[points[i]].rgbaq;
 			q->dw[1] = verts[points[i]].xyz;
@@ -263,13 +280,91 @@
 		// Setup a finish event.
 		q = draw_finish(q);
 
-        
         return 0;
     }
-	int DrawBox(int x0, int y0, int width, int height, COLOR4 color)
+	int DrawBox(float x0, float y0, float width, float height, COLOR4 pColor)
     {
+        
+        float midX = 320.0f;
+		float midY = 256.0f;
+        
+        float tWidth = x0 + width ;
+		float tHheight = y0 + height;
+
+/* 		float xx0 = x0 <= midX ? (( x0/midX )*(45.00f)) - 45.00f:  ((x0-midX) / midX) *45.00f ;
+		float yy0 = y0 <= midY ? ( ( y0/midY ) - 33.50f)*(-1.0f) : (  (y0-midY) / midY ) *(-33.50f);
+
+		tWidth = tWidth <= midX ? (( tWidth/midX )*(45.00f)) - 45.00f:  ((tWidth-midX) / midX) *45.00f ;
+		tHheight = tHheight <= midY ? ( ( tHheight/midY ) - 33.50f)*(-1.0f) : (  (tHheight-midY) / midY ) *(-33.50f);
+ */
+         
+		float xx0 = ((x0 - midX)/midX) * 45.00f;
+		float yy0 = ((y0 - midY)/midY) * -33.50f;
+
+		tWidth = ((tWidth - midX)/midX) * 45.00f;
+		tHheight = ((tHheight - midY)/midY) * -33.50f;
+        
+         VECTOR vertices[5] = {
+          {  xx0,  yy0,  10.00f, 1.00f },
+          {  tWidth,  yy0, 10.00f, 1.00f },
+          { tWidth, tHheight,  10.00f, 1.00f },
+          
+           {  xx0,  tHheight, 10.00f, 1.00f },
+           {  xx0,  yy0,  10.00f, 1.00f }
+         };
+
+        // Define the triangle primitive we want to use.
+        prim.type = PRIM_LINE_STRIP;
+        prim.shading = PRIM_SHADE_GOURAUD;
+        prim.mapping = DRAW_DISABLE;
+        prim.fogging = DRAW_DISABLE;
+        prim.blending = DRAW_DISABLE;
+        prim.antialiasing = DRAW_ENABLE;
+        prim.mapping_type = PRIM_MAP_ST;
+        prim.colorfix = PRIM_UNFIXED;
+        
+        color.r = 0x80;
+        color.g = 0x80;
+        color.b = 0x80;
+        color.a = 0x80;
+        color.q = 1.0f;
+         
+        // Create the local_world matrix.
+		create_local_world(local_world, object_position, object_rotation);
+
+		// Create the world_view matrix.
+		create_world_view(world_view, camera_position, camera_rotation);
+
+		// Create the local_screen matrix.
+		create_local_screen(local_screen, local_world, world_view, view_screen);
+
+		// Calculate the vertex values.
+		calculate_vertices(temp_vertices, vertex_count, vertices, local_screen);
+
+		// Convert floating point vertices to fixed point and translate to center of screen.
+		draw_convert_xyz(verts, 2048, 2048, 32, vertex_count, (vertex_f_t*)temp_vertices);
+
+		// Convert floating point colours to fixed point.
+		draw_convert_rgbq(colors, vertex_count, (vertex_f_t*)temp_vertices, (color_f_t*)colours, 0x80);
+
+		// Draw the triangles using triangle primitive type.
+		q = draw_prim_start(q,0,&prim, &color);
+
+		for(i = 0; i < 5 /*points_count*/; i++)
+		{
+			q->dw[0] = colors[points[i]].rgbaq;
+			q->dw[1] = verts[points[i]].xyz;
+			q++;
+		}
+
+		q = draw_prim_end(q,2,DRAW_RGBAQ_REGLIST);
+
+		// Setup a finish event.
+		q = draw_finish(q);
         
         return 0;
     }
 
 #endif
+
+
