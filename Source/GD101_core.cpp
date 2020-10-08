@@ -453,8 +453,8 @@
 	{
 		// Clear the back buffer 
 		#if defined(DIRECTX)
-		float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red,green,blue,alpha
-		g_pImmediateContext->ClearRenderTargetView( g_pRenderTargetView, ClearColor );
+            float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red,green,blue,alpha
+            g_pImmediateContext->ClearRenderTargetView( g_pRenderTargetView, ClearColor );
 
 		#elif defined(OPENGL)
 				glClear(GL_COLOR_BUFFER_BIT);
@@ -465,19 +465,19 @@
 	void ExecuteShader()
 	{
 		#if defined(DIRECTX)
-		g_pImmediateContext->VSSetShader( g_pVertexShader, NULL, 0 );
-		g_pImmediateContext->PSSetShader( g_pPixelShader, NULL, 0 );
-		g_pImmediateContext->Draw( 3, 0 );
+            g_pImmediateContext->VSSetShader( g_pVertexShader, NULL, 0 );
+            g_pImmediateContext->PSSetShader( g_pPixelShader, NULL, 0 );
+            g_pImmediateContext->Draw( 3, 0 );
 
 		#elif defined(OPENGL)
-		glBegin(GL_TRIANGLES);
-		glColor3f(1.0f, 0.0f, 0.0f);
-		glVertex2i(0,  1);
-		glColor3f(0.0f, 1.0f, 0.0f);
-		glVertex2i(-1, -1);
-		glColor3f(0.0f, 0.0f, 1.0f);
-		glVertex2i(1, -1);
-		glEnd();
+            glBegin(GL_TRIANGLES);
+            glColor3f(1.0f, 0.0f, 0.0f);
+            glVertex2i(0,  1);
+            glColor3f(0.0f, 1.0f, 0.0f);
+            glVertex2i(-1, -1);
+            glColor3f(0.0f, 0.0f, 1.0f);
+            glVertex2i(1, -1);
+            glEnd();
 		#endif
 
 	}
@@ -510,6 +510,85 @@
 //		FOR PLAYSTATION_1 PLATFORM
 //-----------------------------------------------------------------------------------------------------------
 #elif defined(PLAYSTATION_1)
+#include <libetc.h>
+#include <stdlib.h>
+#include <libgte.h>
+#include <libgpu.h>
+#include <libgs.h>
+bool EndLoop()
+{
+    
+    return false;
+}
+
+/* extern int VSync(int);
+extern long SetVideoMode(long); */
+
+int ScreenFlip()
+{
+    //***
+
+    
+    DrawOTag(ot);
+    
+    return 0;
+}
+int ClearScreen()
+{
+    // refresh the font
+	FntFlush(-1);
+	// get the current buffer
+	CurrentBuffer = GsGetActiveBuff();
+	// setup the packet workbase
+	GsSetWorkBase((PACKET*)GPUPacketArea[CurrentBuffer]);
+	// clear the ordering table
+	GsClearOt(0,0, &myOT[CurrentBuffer]);
+    //***
+        // wait for all drawing to finish
+	DrawSync(0);
+	// wait for v_blank interrupt
+	VSync(0);
+	// flip the double buffers
+	GsSwapDispBuff();
+    
+    // clear the ordering table with a background color (R,G,B)
+	GsSortClear(0, 32, 77, &myOT[CurrentBuffer]);
+	// draw the ordering table
+	GsDrawOt(&myOT[CurrentBuffer]);
+    
+    // Clear OT
+    ClearOTag(ot, OT_LENGTH);
+    
+    return 0;
+}
+
+bool GD101_InitWindow(const char * windowName, int height, int width)
+{
+    SetVideoMode(1); // PAL mode
+	//SetVideoMode(0); // NTSC mode
+	
+    // 320 240
+	GsInitGraph(width, height, GsINTER|GsOFSGPU, 1, 0); // set the graphics mode resolutions (GsNONINTER for NTSC, and GsINTER for PAL)
+	GsDefDispBuff(0, 0, 0, height); // tell the GPU to draw from the top left coordinates of the framebuffer
+	
+	// init the ordertables
+	myOT[0].length = OT_LENGTH;
+	myOT[1].length = OT_LENGTH;
+	myOT[0].org = myOT_TAG[0];
+	myOT[1].org = myOT_TAG[1];
+	
+	// clear the ordertables
+	GsClearOt(0,0,&myOT[0]);
+	GsClearOt(0,0,&myOT[1]);
+    
+    return true;
+}
+
+int main() 
+{
+    
+    return Main();
+}
 
 //-----------------------------------------------------------------------------------------------------------
 //		FOR PLAYSTATION_2 PLATFORM
