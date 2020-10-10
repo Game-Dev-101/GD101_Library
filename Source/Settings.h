@@ -9,7 +9,7 @@
     #include "Platform/Android/PlatformEntry.h"
     
 #elif defined(WEBGL)
-    #include "Platform/WebGl/PlatformEntry.h"
+    #include "Platform\WebGl\PlatformEntry.h"
     
 #elif defined(PLAYSTATION_1)
     #include "Platform/Playstation_1/PlatformEntry.h"

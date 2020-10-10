@@ -453,8 +453,8 @@
 	{
 		// Clear the back buffer 
 		#if defined(DIRECTX)
-            float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red,green,blue,alpha
-            g_pImmediateContext->ClearRenderTargetView( g_pRenderTargetView, ClearColor );
+		float ClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f }; // red,green,blue,alpha
+		g_pImmediateContext->ClearRenderTargetView( g_pRenderTargetView, ClearColor );
 
 		#elif defined(OPENGL)
 				glClear(GL_COLOR_BUFFER_BIT);
@@ -465,19 +465,19 @@
 	void ExecuteShader()
 	{
 		#if defined(DIRECTX)
-            g_pImmediateContext->VSSetShader( g_pVertexShader, NULL, 0 );
-            g_pImmediateContext->PSSetShader( g_pPixelShader, NULL, 0 );
-            g_pImmediateContext->Draw( 3, 0 );
+		g_pImmediateContext->VSSetShader( g_pVertexShader, NULL, 0 );
+		g_pImmediateContext->PSSetShader( g_pPixelShader, NULL, 0 );
+		g_pImmediateContext->Draw( 3, 0 );
 
 		#elif defined(OPENGL)
-            glBegin(GL_TRIANGLES);
-            glColor3f(1.0f, 0.0f, 0.0f);
-            glVertex2i(0,  1);
-            glColor3f(0.0f, 1.0f, 0.0f);
-            glVertex2i(-1, -1);
-            glColor3f(0.0f, 0.0f, 1.0f);
-            glVertex2i(1, -1);
-            glEnd();
+		glBegin(GL_TRIANGLES);
+		glColor3f(1.0f, 0.0f, 0.0f);
+		glVertex2i(0,  1);
+		glColor3f(0.0f, 1.0f, 0.0f);
+		glVertex2i(-1, -1);
+		glColor3f(0.0f, 0.0f, 1.0f);
+		glVertex2i(1, -1);
+		glEnd();
 		#endif
 
 	}
@@ -510,85 +510,6 @@
 //		FOR PLAYSTATION_1 PLATFORM
 //-----------------------------------------------------------------------------------------------------------
 #elif defined(PLAYSTATION_1)
-#include <libetc.h>
-#include <stdlib.h>
-#include <libgte.h>
-#include <libgpu.h>
-#include <libgs.h>
-bool EndLoop()
-{
-    
-    return false;
-}
-
-/* extern int VSync(int);
-extern long SetVideoMode(long); */
-
-int ScreenFlip()
-{
-    //***
-
-    
-    DrawOTag(ot);
-    
-    return 0;
-}
-int ClearScreen()
-{
-    // refresh the font
-	FntFlush(-1);
-	// get the current buffer
-	CurrentBuffer = GsGetActiveBuff();
-	// setup the packet workbase
-	GsSetWorkBase((PACKET*)GPUPacketArea[CurrentBuffer]);
-	// clear the ordering table
-	GsClearOt(0,0, &myOT[CurrentBuffer]);
-    //***
-        // wait for all drawing to finish
-	DrawSync(0);
-	// wait for v_blank interrupt
-	VSync(0);
-	// flip the double buffers
-	GsSwapDispBuff();
-    
-    // clear the ordering table with a background color (R,G,B)
-	GsSortClear(0, 32, 77, &myOT[CurrentBuffer]);
-	// draw the ordering table
-	GsDrawOt(&myOT[CurrentBuffer]);
-    
-    // Clear OT
-    ClearOTag(ot, OT_LENGTH);
-    
-    return 0;
-}
-
-bool GD101_InitWindow(const char * windowName, int height, int width)
-{
-    SetVideoMode(1); // PAL mode
-	//SetVideoMode(0); // NTSC mode
-	
-    // 320 240
-	GsInitGraph(width, height, GsINTER|GsOFSGPU, 1, 0); // set the graphics mode resolutions (GsNONINTER for NTSC, and GsINTER for PAL)
-	GsDefDispBuff(0, 0, 0, height); // tell the GPU to draw from the top left coordinates of the framebuffer
-	
-	// init the ordertables
-	myOT[0].length = OT_LENGTH;
-	myOT[1].length = OT_LENGTH;
-	myOT[0].org = myOT_TAG[0];
-	myOT[1].org = myOT_TAG[1];
-	
-	// clear the ordertables
-	GsClearOt(0,0,&myOT[0]);
-	GsClearOt(0,0,&myOT[1]);
-    
-    return true;
-}
-
-int main() 
-{
-    
-    return Main();
-}
 
 //-----------------------------------------------------------------------------------------------------------
 //		FOR PLAYSTATION_2 PLATFORM
@@ -707,6 +628,172 @@ int main(int argc, char **argv)
 //		FOR WEBGL PLATFORM
 //-----------------------------------------------------------------------------------------------------------
 #elif defined(WEBGL)
+#include <iostream>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
+#include "SDL/SDL.h"
+#include "SDL/SDL_image.h"
+#include <GLES2/gl2.h>
+
+bool isInitialized = true;
+GLuint compile_shader(GLenum shaderType, const char *src)
+{
+  GLuint shader = glCreateShader(shaderType);
+  glShaderSource(shader, 1, &src, NULL);
+  glCompileShader(shader);
+
+  GLint isCompiled = 0;
+  glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
+  if (!isCompiled)
+  {
+    GLint maxLength = 0;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+    char *buf = (char*)malloc(maxLength);
+    glGetShaderInfoLog(shader, maxLength, NULL, buf);
+    printf("%s\n", buf);
+    free(buf);
+    return 0;
+  }
+
+   return shader;
+}
+
+GLuint create_program(GLuint vertexShader, GLuint fragmentShader)
+{
+   GLuint program = glCreateProgram();
+   glAttachShader(program, vertexShader);
+   glAttachShader(program, fragmentShader);
+   glBindAttribLocation(program, 0, "apos");
+   glBindAttribLocation(program, 1, "acolor");
+   glLinkProgram(program);
+   return program;
+}
+
+// ini buat mencegah infinity loop, karena kita butuh 1 kali process saja
+bool firstEndLoop = true;//false;
+int ScreenFlip()
+{
+    #ifdef EXPLICIT_SWAP
+      emscripten_webgl_commit_frame();
+    #endif
+  
+  return 0;
+}
+
+bool EndLoop()
+{
+    if(!firstEndLoop){
+        firstEndLoop = true;
+        return false;
+    }
+    else{
+        return true;
+    }
+}
+
+int ClearScreen()
+{
+    std::cout << "ClearScreen \n";
+  glClearColor(0.0f, 0.125f, 0.3f,1);
+  glClear(GL_COLOR_BUFFER_BIT);
+  
+  return 0;
+}
+
+bool GD101_InitWindow(const char * windowName, int height, int width)
+{
+        EmscriptenWebGLContextAttributes attr;
+      emscripten_webgl_init_context_attributes(&attr);
+    #ifdef EXPLICIT_SWAP
+      attr.explicitSwapControl = 1;
+    #endif
+    #ifdef DRAW_FROM_CLIENT_MEMORY
+      // This test verifies that drawing from client-side memory when enableExtensionsByDefault==false works.
+      attr.enableExtensionsByDefault = 0;
+    #endif
+
+      EMSCRIPTEN_WEBGL_CONTEXT_HANDLE ctx = emscripten_webgl_create_context("#canvas", &attr);
+      emscripten_webgl_make_context_current(ctx);
+
+    emscripten_set_canvas_element_size("#canvas", (int)width, (int)height);
+    glViewport(0, 0, (int)width, (int)height);
+      static const char vertex_shader[] =
+        "attribute vec4 apos;"
+        "attribute vec4 acolor;"
+        "varying vec4 color;"
+        "void main() {"
+          "color = acolor;"
+          "gl_Position = apos;"
+        "}";
+      GLuint vs = compile_shader(GL_VERTEX_SHADER, vertex_shader);
+
+      static const char fragment_shader[] =
+        "precision lowp float;"
+        "varying vec4 color;"
+        "void main() {"
+          "gl_FragColor = color;"
+        "}";
+      GLuint fs = compile_shader(GL_FRAGMENT_SHADER, fragment_shader);
+
+      GLuint program = create_program(vs, fs);
+      glUseProgram(program);
+      
+        glEnableVertexAttribArray(0);
+      glEnableVertexAttribArray(1);
+      std::cout << "Main Loop \n";
+
+    
+    return true;
+}
+
+int InitStandartShader()
+{
+ return 0;
+}
+
+EMSCRIPTEN_KEEPALIVE extern "C" void Entry() {
+    std::cout << "Entry 1 \n";
+}
+
+EM_JS(int, GetCanvasWidth, (), {
+    var canvas = document.getElementById('canvas');
+    
+    return canvas.width;
+});
+EM_JS(int, GetCanvasHeight, (), {
+        var canvas = document.getElementById('canvas');
+    
+    return canvas.height;
+});
+
+int GetCvsWidth()
+{
+    return GetCanvasWidth();
+}
+int GetCvsHeight()
+{
+    return GetCanvasHeight();
+}
+// ENTRYPOINT
+int main()
+{
+  std::cout << "Main \n";
+  //InitStandartShader();
+   
+    EM_ASM({
+    requestAnimationFrame = function() {
+      Module._Entry();
+    };
+  });
+  
+  Main();
+  //emscripten_set_main_loop(Main, 30, 1);
+  std::cout << "End Main 1 \n";
+    return 0;
+}
 
 #endif // ALL PLATFORM
 
