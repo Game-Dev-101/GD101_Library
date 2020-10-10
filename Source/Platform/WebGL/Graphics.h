@@ -15,9 +15,5 @@
 	int DrawLine(float x0, float y0, float x1, float y1, COLOR4 pColor);
 	int DrawBox(float x0, float y0, float width, float height, COLOR4 color);
     
-    extern int GetCvsWidth();
-    extern int GetCvsHeight();
-
-
 #endif // __GRAPHICS__
 

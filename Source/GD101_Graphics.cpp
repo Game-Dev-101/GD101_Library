@@ -157,12 +157,10 @@
 //-----------------------------------------------------------------------------------------------------------
 #elif defined(WEBGL)
     #include "Platform\WebGl\Graphics.h"
-    #include <iostream>
+    //#include <iostream>
     
     int DrawLine(float x0, float y0, float x1, float y1, COLOR4 pColor)
-    {
-         std::cout << "DrawLine \n";
-         
+    {     
         float midX = GetCvsWidth()/2;
 		float midY = GetCvsHeight()/2;
 
@@ -235,7 +233,63 @@
 //-----------------------------------------------------------------------------------------------------------
 #elif defined(PLAYSTATION_1)
     #include "Platform\PlayStation_1\Graphics.h"
-    
+#include <stdlib.h>
+#include <libgte.h>
+#include <libgpu.h>
+#include <libgs.h>
+
+LINE_F2 myLineF2;
+LINE_F4 myLineF4;
+    	int DrawLine(float x0, float y0, float x1, float y1, COLOR4 pColor)
+        {
+            myLineF2.r0 = 255;
+            myLineF2.g0 = 255;
+            myLineF2.b0 = 255;
+            
+            myLineF2.x0 = x0;
+            myLineF2.y0 = y0;
+            
+            myLineF2.x1 = x1;
+            myLineF2.y1 = y1;
+
+            SetLineF2(&myLineF2);
+            DrawPrim(&myLineF2);
+            //AddPrim(ot+1,&myLineF2);
+
+            return 0;
+        }
+        
+        int DrawBox(float x0, float y0, float width, float height, COLOR4 color)
+        {
+            myLineF2.r0 = 255;
+            myLineF2.g0 = 255;
+            myLineF2.b0 = 255;
+            
+            myLineF4.r0 = 255;
+            myLineF4.g0 = 255;
+            myLineF4.b0 = 255;
+            
+            myLineF2.x0 = x0;
+            myLineF2.y0 = y0;
+            myLineF2.x1 = x0 + width;
+            myLineF2.y1 = y0;
+            
+            myLineF4.x0 = x0 + width;
+            myLineF4.y0 = y0;
+            myLineF4.x1 = x0 + width;
+            myLineF4.y1 = y0 + height;
+            myLineF4.x2 = x0;
+            myLineF4.y2 = y0 + height;
+            myLineF4.x3 = x0;
+            myLineF4.y3 = y0;
+            
+            SetLineF2(&myLineF2);
+            DrawPrim(&myLineF2);
+            
+            SetLineF4(&myLineF4);
+            DrawPrim(&myLineF4);
+            return 0;
+        }    
 
 //-----------------------------------------------------------------------------------------------------------
 //		FOR PLAYSTATION_2 PLATFORM

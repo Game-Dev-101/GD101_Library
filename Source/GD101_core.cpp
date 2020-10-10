@@ -510,6 +510,83 @@
 //		FOR PLAYSTATION_1 PLATFORM
 //-----------------------------------------------------------------------------------------------------------
 #elif defined(PLAYSTATION_1)
+#include <libetc.h>
+#include <stdlib.h>
+#include <libgte.h>
+#include <libgpu.h>
+#include <libgs.h>
+bool EndLoop()
+{
+    
+    return false;
+}
+
+/* extern int VSync(int);
+extern long SetVideoMode(long); */
+
+int ScreenFlip()
+{
+
+    DrawOTag(ot);
+    
+    return 0;
+}
+int ClearScreen()
+{
+    // refresh the font
+	FntFlush(-1);
+	// get the current buffer
+	CurrentBuffer = GsGetActiveBuff();
+	// setup the packet workbase
+	GsSetWorkBase((PACKET*)GPUPacketArea[CurrentBuffer]);
+	// clear the ordering table
+	GsClearOt(0,0, &myOT[CurrentBuffer]);
+    //***
+        // wait for all drawing to finish
+	DrawSync(0);
+	// wait for v_blank interrupt
+	VSync(0);
+	// flip the double buffers
+	GsSwapDispBuff();
+    
+    // clear the ordering table with a background color (R,G,B)
+	GsSortClear(0, 32, 77, &myOT[CurrentBuffer]);
+	// draw the ordering table
+	GsDrawOt(&myOT[CurrentBuffer]);
+    
+    // Clear OT
+    ClearOTag(ot, OT_LENGTH);
+    
+    return 0;
+}
+
+bool GD101_InitWindow(const char * windowName, int height, int width)
+{
+    SetVideoMode(1); // PAL mode
+	//SetVideoMode(0); // NTSC mode
+	
+    // 320 240
+	GsInitGraph(width, height, GsINTER|GsOFSGPU, 1, 0); // set the graphics mode resolutions (GsNONINTER for NTSC, and GsINTER for PAL)
+	GsDefDispBuff(0, 0, 0, height); // tell the GPU to draw from the top left coordinates of the framebuffer
+	
+	// init the ordertables
+	myOT[0].length = OT_LENGTH;
+	myOT[1].length = OT_LENGTH;
+	myOT[0].org = myOT_TAG[0];
+	myOT[1].org = myOT_TAG[1];
+	
+	// clear the ordertables
+	GsClearOt(0,0,&myOT[0]);
+	GsClearOt(0,0,&myOT[1]);
+    
+    return true;
+}
+
+int main() 
+{
+    
+    return Main();
+}
 
 //-----------------------------------------------------------------------------------------------------------
 //		FOR PLAYSTATION_2 PLATFORM
@@ -628,14 +705,13 @@ int main(int argc, char **argv)
 //		FOR WEBGL PLATFORM
 //-----------------------------------------------------------------------------------------------------------
 #elif defined(WEBGL)
-#include <iostream>
 
-#include <stdio.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
-#include "SDL/SDL.h"
-#include "SDL/SDL_image.h"
+//#include "SDL/SDL.h"
+//#include "SDL/SDL_image.h"
 #include <GLES2/gl2.h>
 
 bool isInitialized = true;
@@ -673,7 +749,7 @@ GLuint create_program(GLuint vertexShader, GLuint fragmentShader)
 }
 
 // ini buat mencegah infinity loop, karena kita butuh 1 kali process saja
-bool firstEndLoop = true;//false;
+//bool firstEndLoop = true;//false;
 int ScreenFlip()
 {
     #ifdef EXPLICIT_SWAP
@@ -685,22 +761,16 @@ int ScreenFlip()
 
 bool EndLoop()
 {
-    if(!firstEndLoop){
-        firstEndLoop = true;
-        return false;
-    }
-    else{
-        return true;
-    }
+       return false;
 }
 
 int ClearScreen()
 {
-    std::cout << "ClearScreen \n";
-  glClearColor(0.0f, 0.125f, 0.3f,1);
-  glClear(GL_COLOR_BUFFER_BIT);
+    //std::cout << "ClearScreen \n";
+      glClearColor(0.0f, 0.125f, 0.3f,1);
+      glClear(GL_COLOR_BUFFER_BIT);
   
-  return 0;
+      return 0;
 }
 
 bool GD101_InitWindow(const char * windowName, int height, int width)
@@ -741,21 +811,19 @@ bool GD101_InitWindow(const char * windowName, int height, int width)
       GLuint program = create_program(vs, fs);
       glUseProgram(program);
       
-        glEnableVertexAttribArray(0);
+      glEnableVertexAttribArray(0);
       glEnableVertexAttribArray(1);
-      std::cout << "Main Loop \n";
-
-    
+      //std::cout << "Main Loop \n"; 
     return true;
 }
 
 int InitStandartShader()
 {
- return 0;
+    return 0;
 }
 
 EMSCRIPTEN_KEEPALIVE extern "C" void Entry() {
-    std::cout << "Entry 1 \n";
+    //std::cout << "Entry 1 \n";
 }
 
 EM_JS(int, GetCanvasWidth, (), {
@@ -780,9 +848,7 @@ int GetCvsHeight()
 // ENTRYPOINT
 int main()
 {
-  std::cout << "Main \n";
   //InitStandartShader();
-   
     EM_ASM({
     requestAnimationFrame = function() {
       Module._Entry();

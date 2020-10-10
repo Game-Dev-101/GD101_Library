@@ -1,0 +1,1 @@
+sementara pake bash dulu ya
