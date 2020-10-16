@@ -150,8 +150,70 @@
 //-----------------------------------------------------------------------------------------------------------
 #elif defined(ANDROID)
     #include "Platform\Android\Graphics.h"
-    
 
+    // sementara aku taruh height sama witdh disini ya
+    int screenHeight    =  gdEngine.height;
+    int screenWidth     =  gdEngine.width;
+    extern GLuint vPosition;
+    int DrawLine(float x0, float y0, float x1, float y1, COLOR4 pColor)
+    { 
+        float midX = gdEngine.width/2;
+		float midY = gdEngine.height/2;
+
+		float xx0 = ((x0 - midX)/midX) ;
+		float yy0 = ((y0 - midY)/midY) * -1.0f;
+
+		float xx1 = ((x1 - midX)/midX) ;
+		float yy1 = ((y1 - midY)/midY) * -1.0f;
+        
+            float pos_and_color[] = {
+          //     x,     y, r, g, b
+             xx0, yy0, 1, 1, 1,
+              xx1, yy1, 1, 1, 1,
+          };
+
+          glBufferData(GL_ARRAY_BUFFER, sizeof(pos_and_color), pos_and_color, GL_STATIC_DRAW);
+             
+          glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 20, 0);
+          glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 20, (void*)8);
+
+          glDrawArrays(GL_LINE_STRIP, 0, 2);
+        return 0;
+    }
+    
+  	int DrawBox(float x0, float y0, float width, float height, COLOR4 pColor)
+    {         
+        float tWidth = x0 + width ;
+		float tHheight = y0 + height;
+
+        float midX = gdEngine.width/2;
+		float midY = gdEngine.height/2;
+    
+		float xx0 = ((x0 - midX)/midX);
+		float yy0 = ((y0 - midY)/midY) * -1.0f;
+
+		tWidth = ((tWidth - midX)/midX) ;
+		tHheight = ((tHheight - midY)/midY) * -1.0f;
+        
+           float pos_and_color[] = {
+          //     x,     y, r, g, b
+             xx0, yy0, 1, 1, 1,
+             tWidth, yy0, 1, 1, 1,
+             tWidth, tHheight, 1, 1, 1,
+             
+             xx0, tHheight, 1, 1, 1,
+             xx0, yy0, 1, 1, 1,
+              
+          };
+
+          glBufferData(GL_ARRAY_BUFFER, sizeof(pos_and_color), pos_and_color, GL_STATIC_DRAW);
+             
+          glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 20, 0);
+          glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 20, (void*)8);
+
+          glDrawArrays(GL_LINE_STRIP, 0, 5);
+        return 0;
+    }
 //-----------------------------------------------------------------------------------------------------------
 //		FOR WEBGL PLATFORM
 //-----------------------------------------------------------------------------------------------------------
@@ -176,9 +238,11 @@
               xx1, yy1, 1, 1, 1,
           };
 
+          // Ini kyknya 
           GLuint vbo;
           glGenBuffers(1, &vbo);
           glBindBuffer(GL_ARRAY_BUFFER, vbo);
+          //
           glBufferData(GL_ARRAY_BUFFER, sizeof(pos_and_color), pos_and_color, GL_STATIC_DRAW);
              
           glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 20, 0);
@@ -215,10 +279,12 @@
              xx0, yy0, 1, 1, 1,
               
           };
-
+          
+          // INi bahaya
           GLuint vbo;
           glGenBuffers(1, &vbo);
           glBindBuffer(GL_ARRAY_BUFFER, vbo);
+          // wkwkw
           glBufferData(GL_ARRAY_BUFFER, sizeof(pos_and_color), pos_and_color, GL_STATIC_DRAW);
              
           glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 20, 0);

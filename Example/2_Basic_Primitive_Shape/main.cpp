@@ -64,7 +64,7 @@ int Main()
 	float y =0;
 	bool isRight = false;
 
-	Rect boxRect(20, 20, 50, 50);
+	Rect boxRect(20, 20, 80, 80);
 	float xVelo = 6.3f;
 	float yVelo = 6.6f;
 
@@ -75,7 +75,7 @@ int Main()
 
 		// Untuk Garis
 		if(x <= 0  ) isRight =true;
-		else if( x >= 612) isRight = false;
+		else if( x >= 1200) isRight = false;
 
 		if(isRight) x += 6.5f;
 		else x -= 6.5f;
@@ -83,12 +83,12 @@ int Main()
 		boxRect.x += xVelo;
 		boxRect.y += yVelo;
 		// Untuk Box
-		if(boxRect.x + boxRect.width >= 612  || boxRect.x <= 0)
+		if(boxRect.x + boxRect.width >= 1250  || boxRect.x <= 0)
 			xVelo *= -1;
-		if(boxRect.y + boxRect.height >= 500 || boxRect.y <= 0)
+		if(boxRect.y + boxRect.height >= 700 || boxRect.y <= 0)
 			yVelo *= -1;
 
-		DrawLine(x, 0, 600, 500, COLOR4(0.0,0.0,0.0,1.0));
+		DrawLine(x, 0, 1200, 700, COLOR4(0.0,0.0,0.0,1.0));
 		DrawBox(boxRect.x, boxRect.y, boxRect.width, boxRect.height,  COLOR4(0.0,0.0,0.0,1.0));
 
 		ScreenFlip();

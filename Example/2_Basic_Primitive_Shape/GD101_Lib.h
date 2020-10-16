@@ -41,6 +41,10 @@ extern void ExecuteShader();
 extern int DrawLine(float x0, float y0, float x1, float y1, COLOR4 color);
 extern int DrawBox(float x0, float y0, float width, float height, COLOR4 color);
 
+// Ini sementara tersedia untuk android saja, kalai ada waktu di rapikan lagi
+extern int screenHeight;
+extern int screenWidth;
+/////////////////////////////////////////
 //------------- Inputs ----------/////////////////////////////////////
 
 #endif //__GD_101_LIB__
